@@ -1,15 +1,17 @@
-# api/serializers.py
 from rest_framework import serializers
-from django.contrib.auth.models import User #장고 지원 모델의 User 모델 사용
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Profile
+
+
 # 회원가입
+from .models import Profile
+
+
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "password")
-        extra_kwargs = {"password": {"write_only": True}}
-
+        extra_kwargs = {"password": {"write_only": True}} #모델에는 없지만 api에서 입력은 머겨야 하는 필드
     def create(self, validated_data):
         user = User.objects.create_user(
             validated_data["username"], None, validated_data["password"]
@@ -30,12 +32,11 @@ class LoginUserSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
-        user = authenticate(**data)
+        user = authenticate(**data) #들어온 데이터를 authenticate를 통해 비교한다.
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Unable to log in with provided credentials.")
 
-# 프로필 시리얼라이저
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile

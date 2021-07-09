@@ -4,12 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from knox.models import AuthToken
 
-from .models import Profile
+from .models import Profile, User
 from .serializers import CreateUserSerializer, UserSerializer, LoginUserSerializer, ProfileSerializer
 
 
 # Create your views here.
-
 
 class RegistrationAPI(generics.GenericAPIView):
     serializer_class = CreateUserSerializer
@@ -54,7 +53,20 @@ class UserAPI(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-class ProfileUpdateAPI(generics.UpdateAPIView):
-    lookup_field = "user_pk"
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class ProfileList(generics.ListCreateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+
+class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
